@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+	<sys_file_reference>
+		<uid>1</uid>
+		<pid>1</pid>
+		<uid_local>1</uid_local>
+		<uid_foreign>1</uid_foreign>
+		<tablenames>tx_blogexample_domain_model_post</tablenames>
+		<fieldname>images</fieldname>
+		<table_local>sys_file</table_local>
+		<title>my test image</title>
+		<table_local>sys_file</table_local>
+		<sys_language_uid>0</sys_language_uid>
+		<l10n_parent>0</l10n_parent>
+	</sys_file_reference>
+	<sys_file_reference>
+		<uid>2</uid>
+		<pid>1</pid>
+		<uid_local>2</uid_local>
+		<uid_foreign>2</uid_foreign>
+		<tablenames>tx_blogexample_domain_model_post</tablenames>
+		<fieldname>images</fieldname>
+		<table_local>sys_file</table_local>
+		<sys_language_uid>1</sys_language_uid>
+		<l10n_parent>1</l10n_parent>
+		<title>EN my test image</title>
+	</sys_file_reference>
+	<sys_file_reference>
+		<uid>3</uid>
+		<pid>1</pid>
+		<uid_local>3</uid_local>
+		<uid_foreign>2</uid_foreign>
+		<tablenames>tx_blogexample_domain_model_post</tablenames>
+		<fieldname>images</fieldname>
+		<table_local>sys_file</table_local>
+		<table_local>sys_file</table_local>
+		<sys_language_uid>1</sys_language_uid>
+		<l10n_parent>0</l10n_parent>
+	</sys_file_reference>
+</dataset>

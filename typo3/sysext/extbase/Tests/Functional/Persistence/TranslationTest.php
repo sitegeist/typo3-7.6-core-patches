@@ -29,6 +29,13 @@ class TranslationTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase
     /**
      * @var array
      */
+    protected $pathsToLinkInTestInstance = array(
+        'typo3/sysext/extbase/Tests/Functional/Persistence/Fixtures/Folders/fileadmin/user_upload' => 'fileadmin/user_upload',
+    );
+
+    /**
+     * @var array
+     */
     protected $coreExtensionsToLoad = ['extbase', 'fluid'];
 
     /**
@@ -60,11 +67,18 @@ class TranslationTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase
         $this->importDataSet(ORIGINAL_ROOT . 'typo3/sysext/core/Tests/Functional/Fixtures/pages.xml');
         $this->importDataSet(ORIGINAL_ROOT . 'typo3/sysext/extbase/Tests/Functional/Persistence/Fixtures/blogs.xml');
         $this->importDataSet(ORIGINAL_ROOT . 'typo3/sysext/extbase/Tests/Functional/Persistence/Fixtures/translated-posts.xml');
+        $this->importDataSet(ORIGINAL_ROOT . 'typo3/sysext/extbase/Tests/Functional/Persistence/Fixtures/sys_file.xml');
+        $this->importDataSet(ORIGINAL_ROOT . 'typo3/sysext/extbase/Tests/Functional/Persistence/Fixtures/sys_file_reference.xml');
+        $this->importDataSet(ORIGINAL_ROOT . 'typo3/sysext/extbase/Tests/Functional/Persistence/Fixtures/sys_file_storage.xml');
 
         $this->objectManager = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
         $this->postRepository = $this->objectManager->get(\ExtbaseTeam\BlogExample\Domain\Repository\PostRepository::class);
 
         $this->setUpBasicFrontendEnvironment();
+
+        // todo: find way to "mock" BE_USER in StoragePermissionsAspect or un-register signal
+        $GLOBALS['BE_USER'] = new \TYPO3\CMS\Core\Authentication\BackendUserAuthentication();
+        $GLOBALS['BE_USER']->user['admin'] = 1;
     }
 
     /**
@@ -80,8 +94,10 @@ class TranslationTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase
         GeneralUtility::setSingletonInstance(\TYPO3\CMS\Extbase\Service\EnvironmentService::class, $environmentServiceMock);
 
         $pageRepositoryFixture = new PageRepository();
+        /** @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $frontendControllerMock */
         $frontendControllerMock = $this->getMock(\TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController::class, [], [], '', false);
         $frontendControllerMock->sys_page = $pageRepositoryFixture;
+//      $frontendControllerMock->sys_language_mode = 'strict';
         $GLOBALS['TSFE'] = $frontendControllerMock;
     }
 
@@ -96,6 +112,8 @@ class TranslationTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase
         $querySettings->setStoragePageIds([1]);
         $querySettings->setRespectSysLanguage(true);
         $querySettings->setLanguageUid(0);
+
+        $GLOBALS['TSFE']->sys_language_content = 0;
 
         $postCount = $query->execute()->count();
         $this->assertSame(3, $postCount);
@@ -113,6 +131,8 @@ class TranslationTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase
         $querySettings->setRespectSysLanguage(true);
         $querySettings->setLanguageUid(1);
 
+        $GLOBALS['TSFE']->sys_language_content = 1;
+
         $postCount = $query->execute()->count();
         $this->assertSame(3, $postCount);
     }
@@ -122,6 +142,8 @@ class TranslationTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase
      */
     public function countReturnsCorrectNumberOfPostsInGreekLanguage()
     {
+        $GLOBALS['TSFE']->sys_language_content = 2;
+
         $query = $this->postRepository->createQuery();
 
         $querySettings = $query->getQuerySettings();
@@ -138,6 +160,8 @@ class TranslationTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase
      */
     public function fetchingPostsReturnsEnglishPostsWithFallback()
     {
+        $GLOBALS['TSFE']->sys_language_content = 1;
+
         $query = $this->postRepository->createQuery();
 
         $querySettings = $query->getQuerySettings();
@@ -159,6 +183,8 @@ class TranslationTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase
      */
     public function fetchingPostsReturnsGreekPostsWithFallback()
     {
+        $GLOBALS['TSFE']->sys_language_content = 2;
+
         $query = $this->postRepository->createQuery();
 
         $querySettings = $query->getQuerySettings();
@@ -180,6 +206,8 @@ class TranslationTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase
      */
     public function orderingByTitleRespectsEnglishTitles()
     {
+        $GLOBALS['TSFE']->sys_language_content = 1;
+
         $query = $this->postRepository->createQuery();
 
         $querySettings = $query->getQuerySettings();
@@ -196,5 +224,40 @@ class TranslationTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase
         $this->assertSame('A EN:Post2', $posts[0]->getTitle());
         $this->assertSame('B EN:Post1', $posts[1]->getTitle());
         $this->assertSame('Post3', $posts[2]->getTitle());
+    }
+
+    /**
+     * @test
+     */
+    public function countReturningCorrectNumberOfImagesInDefaultLanguage() {
+        $GLOBALS['TSFE']->sys_language_content = 0;
+
+        /** @var Post $post */
+        $post = $this->postRepository->findByUid(1);
+
+        $this->assertSame('Post1', $post->getTitle());
+        $this->assertCount(1, $post->getImages());
+        /** @var \TYPO3\CMS\Extbase\Domain\Model\FileReference $image */
+        foreach ($post->getImages() as $image) {
+            $this->assertSame('my test image', $image->getOriginalResource()->getTitle());
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function countReturningCorrectNumberOfImagesInEnglish() {
+
+        $GLOBALS['TSFE']->sys_language_content = 1;
+
+        /** @var Post $post */
+        $post = $this->postRepository->findByUid(2);
+
+        $this->assertSame('B EN:Post1', $post->getTitle());
+        $this->assertCount(2, $post->getImages());
+
+        $images = $post->getImages()->toArray();
+        $this->assertSame('EN my test image', $images[0]->getOriginalResource()->getTitle());
+        $this->assertSame(NULL, $images[1]->getOriginalResource()->getTitle());
     }
 }

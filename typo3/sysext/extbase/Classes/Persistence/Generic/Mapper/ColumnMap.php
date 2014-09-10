@@ -168,6 +168,25 @@ class ColumnMap
     protected $internalType;
 
     /**
+     * @var bool
+     */
+    protected $relationsOverriddenByTranslation;
+
+    /**
+     * @return boolean
+     */
+    public function isRelationsOverriddenByTranslation() {
+        return $this->relationsOverriddenByTranslation;
+    }
+
+    /**
+     * @param boolean $relationsOverriddenByTranslation
+     */
+    public function setRelationsOverriddenByTranslation($relationsOverriddenByTranslation) {
+        $this->relationsOverriddenByTranslation = $relationsOverriddenByTranslation;
+    }
+
+    /**
      * Constructs a Column Map
      *
      * @param string $columnName The column name
