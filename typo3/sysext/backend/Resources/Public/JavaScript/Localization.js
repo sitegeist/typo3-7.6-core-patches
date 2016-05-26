@@ -257,7 +257,8 @@ define([
 						Localization.getSummary(
 							$triggerButton.data('pageId'),
 							$triggerButton.data('colposId'),
-							$triggerButton.data('languageId')
+							$triggerButton.data('languageId'),
+							$triggerButton.data('elements')
 						).done(function(result) {
 							var $summary = $('<div />', {class: 'row'});
 							Localization.records = [];
@@ -343,13 +344,14 @@ define([
 		 * @param {Integer} languageId
 		 * @return {Promise}
 		 */
-		Localization.getSummary = function(pageId, colPos, languageId) {
+		Localization.getSummary = function(pageId, colPos, languageId, elementIds) {
 			return $.ajax({
 				url: TYPO3.settings.ajaxUrls['records_localize_summary'],
 				data: {
 					pageId: pageId,
 					colPos: colPos,
 					destLanguageId: languageId,
+					elementIds: elementIds,
 					languageId: Localization.settings.language
 				}
 			});
