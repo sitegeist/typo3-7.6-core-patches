@@ -1840,6 +1840,7 @@ class PageLayoutView extends \TYPO3\CMS\Recordlist\RecordList\AbstractDatabaseRe
                     . ' class="btn btn-default t3js-localize"'
                     . ' type="button"'
                     . ' disabled'
+                    . ' data-elements="' . json_encode($defLanguageCount) . '"'
                     . ' value="' . htmlspecialchars($this->getLanguageService()->getLL('newPageContent_translate', true)) . '"'
                     . ' data-has-elements="' . (int)!empty($this->contentElementCache[$lP][$colPos]) . '"'
                     . ' data-allow-copy="' . (int)$allowCopy . '"'
