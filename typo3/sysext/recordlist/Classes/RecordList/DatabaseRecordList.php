@@ -1852,7 +1852,7 @@ class DatabaseRecordList extends AbstractDatabaseRecordList
             'sys_refindex',
             'tablename=' . $this->getDatabaseConnection()->fullQuoteStr($tableName, 'sys_refindex') . ' AND recuid=' . (int)$uid
         );
-        return $this->generateBidirectionalReferenceToolTip($referenceCount, $referenceFromCount, GeneralUtility::quoteJSvalue($tableName) . ', ' . GeneralUtility::quoteJSvalue($uid));
+        return $this->generateReferenceToolTip($referenceCount, $referenceFromCount, GeneralUtility::quoteJSvalue($tableName) . ', ' . GeneralUtility::quoteJSvalue($uid));
     }
 
     /**
@@ -1864,7 +1864,7 @@ class DatabaseRecordList extends AbstractDatabaseRecordList
      * @param string $launchViewParameter JavaScript String, which will be passed as parameters to top.launchView
      * @return string
      */
-    protected function generateBidirectionalReferenceToolTip($referenceCount, $referenceFromCount, $launchViewParameter = '')
+    protected function generateReferenceToolTip($referenceCount, $referenceFromCount, $launchViewParameter = '')
     {
         if (!$referenceCount && !$referenceFromCount) {
             $htmlCode = '-';
