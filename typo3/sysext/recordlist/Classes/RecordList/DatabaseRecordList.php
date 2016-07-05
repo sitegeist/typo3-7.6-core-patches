@@ -532,7 +532,7 @@ class DatabaseRecordList extends AbstractDatabaseRecordList
             $this->fieldArray[] = '_CLIPBOARD_';
         }
         // Ref
-        if (!$this->dontShowClipControlPanels) {
+        if (!$this->dontShowClipControlPanels || (is_array($this->setFields[$table]) && in_array('_REF_', $this->setFields[$table]))) {
             $this->fieldArray[] = '_REF_';
         }
         // Path
@@ -1842,7 +1842,38 @@ class DatabaseRecordList extends AbstractDatabaseRecordList
             'ref_table = ' . $db->fullQuoteStr($tableName, 'sys_refindex') .
             ' AND ref_uid = ' . $uid . ' AND deleted = 0'
         );
-        return $this->generateReferenceToolTip($referenceCount, GeneralUtility::quoteJSvalue($tableName) . ', ' . GeneralUtility::quoteJSvalue($uid));
+
+        $referenceFromCount = $this->getDatabaseConnection()->exec_SELECTcountRows(
+            '*',
+            'sys_refindex',
+            'tablename=' . $this->getDatabaseConnection()->fullQuoteStr($tableName, 'sys_refindex') . ' AND recuid=' . (int)$uid
+        );
+        return $this->generateBidirectionalReferenceToolTip($referenceCount, $referenceFromCount, GeneralUtility::quoteJSvalue($tableName) . ', ' . GeneralUtility::quoteJSvalue($uid));
+    }
+
+    /**
+     * Generates HTML code for a Reference tooltip out of
+     * sys_refindex records you hand over
+     *
+     * @param int $referenceCount number of records from sys_refindex table (that point to the record)
+     * @param int $referenceFromCount number of records the record points to
+     * @param string $launchViewParameter JavaScript String, which will be passed as parameters to top.launchView
+     * @return string
+     */
+    protected function generateBidirectionalReferenceToolTip($referenceCount, $referenceFromCount, $launchViewParameter = '')
+    {
+        if (!$referenceCount && !$referenceFromCount) {
+            $htmlCode = '-';
+        } else {
+            $htmlCode = '<a href="#"';
+            if ($launchViewParameter !== '') {
+                $htmlCode .= ' onclick="' . htmlspecialchars(('top.launchView(' . $launchViewParameter . '); return false;')) . '"';
+            }
+            $htmlCode .= ' title="' . htmlspecialchars($this->getLanguageService()->sl('LLL:EXT:backend/Resources/Private/Language/locallang.xlf:show_references') . ' (' .  $referenceCount . ')') . '">';
+            $htmlCode .= $referenceCount . '/' . $referenceFromCount;
+            $htmlCode .= '</a>';
+        }
+        return $htmlCode;
     }
 
     /**
