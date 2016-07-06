@@ -80,20 +80,24 @@ class SelectMultipleSideBySideElement extends AbstractFormElement
                 }
             }
             if ($itemArray[1] == '') {
-                // NOTE: This is a rather ugly hack to fix bug #22180.
-                // The problem is that for select elements, the relations in a record are not updated to use the
-                // translated counterparts when the record is translated (and these translations do not necessarily
-                // even exist!).
-                // FormEngine selects the available records to pick from based on the field’s TCA configuration, which
-                // often limits the records to the current record’s language and the special case -1 (all languages).
-                // This leads to the actually selected records (from sys_language 0) not being in the selection pool,
-                // and thus they are not available here (in $selItems). Therefore, the label breaks and we must fix it
-                // manually here.
-                // A cleaner approach would be to add the actually selected items to the array when items is filled,
-                // but this is also more complicated and has even more potential side effects. However, this should
-                // clearly be fixed in the TYPO3 core in a clean way.
-                $itemRow = BackendUtility::getRecord($config['foreign_table'], $itemArray[0]);
-                $itemArray[1] = BackendUtility::getRecordTitle($config['foreign_table'], $itemRow);
+                if (isset($GLOBALS['TCA'][$config['foreign_table']]) && MathUtility::canBeInterpretedAsInteger($itemArray[0])) {
+                    // NOTE: This is a rather ugly hack to fix bug #22180.
+                    // The problem is that for select elements, the relations in a record are not updated to use the
+                    // translated counterparts when the record is translated (and these translations do not necessarily
+                    // even exist!).
+                    // FormEngine selects the available records to pick from based on the field’s TCA configuration, which
+                    // often limits the records to the current record’s language and the special case -1 (all languages).
+                    // This leads to the actually selected records (from sys_language 0) not being in the selection pool,
+                    // and thus they are not available here (in $selItems). Therefore, the label breaks and we must fix it
+                    // manually here.
+                    // A cleaner approach would be to add the actually selected items to the array when items is filled,
+                    // but this is also more complicated and has even more potential side effects. However, this should
+                    // clearly be fixed in the TYPO3 core in a clean way.
+                    $itemRow = BackendUtility::getRecord($config['foreign_table'], $itemArray[0]);
+                    $itemArray[1] = BackendUtility::getRecordTitle($config['foreign_table'], $itemRow);
+                } else {
+                    $itemArray[1] = 'Label not available';
+                }
             }
             $itemsArray[$itemNumber] = implode('|', $itemArray);
         }
