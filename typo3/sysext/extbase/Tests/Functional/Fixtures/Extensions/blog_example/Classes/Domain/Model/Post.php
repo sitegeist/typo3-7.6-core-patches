@@ -70,14 +70,6 @@ class Post extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $relatedPosts = null;
 
     /**
-     * Images
-     *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference>
-     * @lazy
-     */
-    protected $images;
-
-    /**
      * Constructs this post
      */
     public function __construct()
@@ -86,7 +78,6 @@ class Post extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->categories = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $this->comments = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $this->relatedPosts = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
-        $this->images = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $this->date = new \DateTime();
     }
 
@@ -385,34 +376,6 @@ class Post extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function getRelatedPosts()
     {
         return $this->relatedPosts;
-    }
-
-    /**
-     * Returns the images
-     *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage $images
-     */
-    public function getImages() {
-        return $this->images;
-    }
-
-    /**
-     * Sets the images
-     *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage $images
-     * @return void
-     */
-    public function setImages($images) {
-        $this->images = $images;
-    }
-
-    /**
-     * Add image
-     *
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FileReference $image
-     */
-    public function addImage(\TYPO3\CMS\Extbase\Domain\Model\FileReference $image) {
-        $this->images->attach($image);
     }
 
     /**

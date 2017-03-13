@@ -446,11 +446,7 @@ class DataMapper implements \TYPO3\CMS\Core\SingletonInterface
     {
         $columnMap = $this->getDataMap(get_class($parentObject))->getColumnMap($propertyName);
         if ($columnMap->getParentKeyFieldName() !== null) {
-            if ($columnMap->isRelationsOverriddenByTranslation()) {
-                $constraint = $query->equals($columnMap->getParentKeyFieldName(), $parentObject->_getProperty('_localizedUid'));
-            } else {
-                $constraint = $query->equals($columnMap->getParentKeyFieldName(), $parentObject);
-            }
+            $constraint = $query->equals($columnMap->getParentKeyFieldName(), $parentObject);
             if ($columnMap->getParentTableFieldName() !== null) {
                 $constraint = $query->logicalAnd(
                     $constraint,
