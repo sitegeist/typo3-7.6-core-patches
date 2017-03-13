@@ -105,6 +105,14 @@ class FormInlineAjaxController
             $childVanillaUid = (int)$inlineFirstPid;
         }
 
+
+	    if (isset($ajaxArguments['context'])) {
+	        $context = json_decode($ajaxArguments['context'], true);
+	        if (GeneralUtility::hmac(serialize($context['config'])) === $context['hmac']) {
+		        $parentConfig = $context['config'];
+		    }
+        }
+
         if ($parentConfig['type'] === 'flex') {
             $parentConfig = $this->getParentConfigFromFlexForm($parentConfig, $domObjectId);
         }
@@ -265,6 +273,13 @@ class FormInlineAjaxController
         $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class, $formDataGroup);
         $parentData = $formDataCompiler->compile($formDataCompilerInputForParent);
         $parentConfig = $parentData['processedTca']['columns'][$parentFieldName]['config'];
+
+	    if (isset($ajaxArguments['context'])) {
+		    $context = json_decode($ajaxArguments['context'], true);
+		    if (GeneralUtility::hmac(serialize($context['config'])) === $context['hmac']) {
+			    $parentConfig = $context['config'];
+		    }
+	    }
 
         if ($parentConfig['type'] === 'flex') {
             $parentConfig = $this->getParentConfigFromFlexForm($parentConfig, $domObjectId);
