@@ -1852,7 +1852,7 @@ class DatabaseRecordList extends AbstractDatabaseRecordList
             'sys_refindex',
             'tablename=' . $this->getDatabaseConnection()->fullQuoteStr($tableName, 'sys_refindex') . ' AND recuid=' . (int)$uid
         );
-        return $this->generateReferenceToolTip($referenceCount, $referenceFromCount, GeneralUtility::quoteJSvalue($tableName) . ', ' . GeneralUtility::quoteJSvalue($uid));
+        return $this->generateReferenceToolTip($referenceCount, GeneralUtility::quoteJSvalue($tableName) . ', ' . GeneralUtility::quoteJSvalue($uid), $referenceFromCount);
     }
 
     /**
@@ -1860,11 +1860,11 @@ class DatabaseRecordList extends AbstractDatabaseRecordList
      * sys_refindex records you hand over
      *
      * @param int $referenceCount number of records from sys_refindex table (that point to the record)
-     * @param int $referenceFromCount number of records the record points to
      * @param string $launchViewParameter JavaScript String, which will be passed as parameters to top.launchView
+     * @param int $referenceFromCount number of records the record points to
      * @return string
      */
-    protected function generateReferenceToolTip($referenceCount, $referenceFromCount, $launchViewParameter = '')
+    protected function generateReferenceToolTip($referenceCount, $launchViewParameter = '', $referenceFromCount)
     {
         if (!$referenceCount && !$referenceFromCount) {
             $htmlCode = '-';
