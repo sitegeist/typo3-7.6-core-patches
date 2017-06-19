@@ -1864,7 +1864,7 @@ class DatabaseRecordList extends AbstractDatabaseRecordList
      * @param int $referenceFromCount number of records the record points to
      * @return string
      */
-    protected function generateReferenceToolTip($referenceCount, $launchViewParameter = '', $referenceFromCount)
+    protected function generateReferenceToolTip($referenceCount, $launchViewParameter = '', $referenceFromCount=0)
     {
         if (!$referenceCount && !$referenceFromCount) {
             $htmlCode = '-';
